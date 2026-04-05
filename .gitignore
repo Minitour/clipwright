@@ -1,0 +1,33 @@
+.cursor/
+.claude/
+.mcp.json
+AGENTS.md
+CLAUDE.md
+projects/
+# Python
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Video project renders & Remotion deps
+projects/**/manim/output/
+projects/**/manim/videos/
+projects/**/remotion/node_modules/
+projects/**/remotion/out/
+node_modules/

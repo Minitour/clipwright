@@ -1,0 +1,51 @@
+providers:
+  - cursor
+  - claude-code
+options:
+  requiresCommands:
+    - cli: node -v
+      description: >-
+        Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Install from https://nodejs.org/en/download/
+    - cli: uv
+      description: >-
+        UV is a tool for managing Python projects. Install from https://docs.astral.sh/uv/getting-started/installation/
+    - cli: ffmpeg
+      description: >-
+        FFmpeg is a free and open-source software for video and audio
+        processing. Install from https://www.ffmpeg.org/download.html
+  toolExposure: on-demand
+skills:
+  - id: capabilities-manager
+    type: github
+    def:
+      repo: infragate/capa@capabilities-manager
+      description: Guide for managing capabilities with capa CLI
+  - id: remotion
+    type: github
+    def:
+      repo: remotion-dev/remotion@remotion
+      description: Best practices for Remotion — video creation in React
+  - id: manim
+    type: github
+    def:
+      repo: adithya-s-k/manim_skill@manimgl-best-practices
+      description: Agent skills for Manim to create 3Blue1Brown style animations.
+  - id: text-to-speech
+    type: local
+    def:
+      path: skills/text-to-speech
+      description: >-
+        Hugging Face text-to-speech (Transformers pipeline), uv setup, hf_tts.py CLI, WAV/MP3 export
+
+agents:
+  base:
+    type: local
+    path: ./WORKFLOW.md
+  additional:
+    - type: inline
+      id: capa_tool_usage
+      content: >-
+        After learning a new skill, call the `setup_tools` tool to activate it,
+        then use `call_tool` to invoke the relevant tool.
+servers: []
+tools: []

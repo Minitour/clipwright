@@ -1,0 +1,103 @@
+# ──────────────────────────────────────────────────────────────
+# Global Configuration
+# ──────────────────────────────────────────────────────────────
+# This file defines default preferences applied to every new
+# project. Individual projects can override any value in their
+# own plan or code — these are starting-point defaults.
+#
+# The agent reads this file at the start of every workflow and
+# uses it to populate project plans, choose resolution/codec
+# settings, and apply brand-consistent styling.
+# ──────────────────────────────────────────────────────────────
+
+# ── Brand Identity ───────────────────────────────────────────
+[brand]
+name = ""                         # Brand or channel name
+
+[brand.colors]
+primary    = "#FFFFFF"            # Main brand color (titles, key elements)
+accent     = "#3B82F6"            # Secondary highlight color (callouts, links)
+background = "#000000"            # Default background fill
+text       = "#FFFFFF"            # Default text/foreground color
+muted      = "#9CA3AF"            # Subdued text, captions, secondary labels
+
+[brand.fonts]
+heading = "Inter"                 # Font for titles and headings
+body    = "Inter"                 # Font for body text and labels
+code    = "JetBrains Mono"       # Font for code snippets and monospaced text
+
+[brand.logo]
+path   = ""                      # Relative path to logo file (e.g. "assets/logo.png")
+height = 48                      # Default logo height in pixels when overlaid
+
+# ── Video Defaults ───────────────────────────────────────────
+[video]
+width  = 1920
+height = 1080
+fps    = 60
+
+[video.output]
+codec  = "h264"                  # h264 (compatible) | h265 (smaller) | prores (lossless)
+format = "mp4"                   # mp4 | webm | mov
+crf    = 18                      # Constant Rate Factor (lower = higher quality, 0–51)
+
+# ── Platform Presets ─────────────────────────────────────────
+# Set `video.preset` to one of these names to override width,
+# height, and fps with platform-optimized values. Leave blank
+# to use the explicit values above.
+[video.presets.youtube]
+width  = 1920
+height = 1080
+fps    = 30
+
+[video.presets.youtube-shorts]
+width  = 1080
+height = 1920
+fps    = 30
+
+[video.presets.instagram-reel]
+width  = 1080
+height = 1920
+fps    = 30
+
+[video.presets.instagram-post]
+width  = 1080
+height = 1080
+fps    = 30
+
+[video.presets.tiktok]
+width  = 1080
+height = 1920
+fps    = 30
+
+[video.presets."4k"]
+width  = 3840
+height = 2160
+fps    = 30
+
+# ── Audio Defaults ───────────────────────────────────────────
+[audio]
+voiceover_volume  = 1.0          # 0.0–1.0, relative volume for voiceover tracks
+music_volume      = 0.15         # 0.0–1.0, background music sits under voiceover
+sfx_volume        = 0.6          # 0.0–1.0, sound effect volume
+
+[audio.voiceover]
+provider = "huggingface"         # huggingface (offline TTS) | none
+model    = "hexgrad/Kokoro-82M"  # Kokoro TTS weights (via `kokoro` package; see generate_voice_segments.py)
+
+# ── ManimGL Defaults ─────────────────────────────────────────
+[manim]
+background_color = "#000000"     # Scene background (overrides ManimGL default)
+text_color       = "#FFFFFF"     # Default text/mobject color
+quality          = "high"        # low | medium | high | uhd
+
+# ── Remotion Defaults ────────────────────────────────────────
+[remotion]
+tailwind = true                  # Initialize projects with TailwindCSS support
+
+# ── Style Preferences ───────────────────────────────────────
+[style]
+animation_style = "smooth"       # smooth | snappy | cinematic
+transition      = "fade"         # Default transition between scenes: fade | slide | wipe | none
+caption_position = "bottom"      # bottom | top | center
+watermark       = false          # Overlay brand logo as a watermark on output
