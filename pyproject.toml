@@ -1,5 +1,5 @@
 [project]
-name = "video-master"
+name = "clipwright"
 version = "0.1.0"
 description = "Shared workspace Python environment (ManimGL and other tooling)"
 requires-python = ">=3.13"
