@@ -4,6 +4,8 @@ An AI-powered video production workspace. Describe the video you want, and the a
 
 Under the hood, clipwright combines [Remotion](https://www.remotion.dev/) (React-based video) and [ManimGL](https://github.com/3b1b/manim) (mathematical animation) into a single pipeline with local text-to-speech, brand-consistent styling, and platform-aware output. You don't need to know either tool — the agent handles the code.
 
+Skills, tools, and agent instructions are managed by [CAPA](https://github.com/infragate/capa) — a capabilities manager for AI agents.
+
 ## What You Can Make
 
 - Explainer and educational videos
@@ -23,21 +25,28 @@ The agent reads your preferences from `config.toml` (brand colors, fonts, resolu
 
 ## Prerequisites
 
-Install the following before your first project:
-
 - [Node.js](https://nodejs.org/) 18+
 - [Python](https://www.python.org/) 3.13+
 - [uv](https://docs.astral.sh/uv/) (Python package manager)
 - [FFmpeg](https://ffmpeg.org/)
+- [CAPA](https://github.com/infragate/capa) (AI capabilities manager)
 
 ## Setup
 
 ```bash
 git clone https://github.com/<your-username>/clipwright.git
 cd clipwright
+capa install
+```
+
+`capa install` installs the agent skills (Remotion, ManimGL, TTS) and verifies that the required CLI tools (Node.js, uv, FFmpeg) are on your PATH. Python and Node.js dependencies are installed separately:
+
+```bash
 uv sync
 npm install
 ```
+
+After installation, open the project in Cursor and start chatting with the agent.
 
 ## Configuration
 
@@ -58,6 +67,7 @@ Each video lives in its own directory under `projects/`. The agent creates and m
 ```
 clipwright/
 ├── config.toml          # Your global defaults
+├── capabilities.yaml    # CAPA skills, tools, and agent config
 ├── skills/              # Built-in capabilities (TTS, engine guides)
 └── projects/
     └── my-video/
