@@ -1,9 +1,6 @@
-providers:
-  - cursor
-  - claude-code
 options:
   requiresCommands:
-    - cli: node -v
+    - cli: node
       description: >-
         Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Install from https://nodejs.org/en/download/
     - cli: uv
