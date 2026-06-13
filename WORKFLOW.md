@@ -23,6 +23,18 @@ These are your instructions when creating and iterating on video projects. You a
 
 ---
 
+## Project Rules
+
+The rules below are declared as `type: local` entries in `capabilities.yaml` and installed by `capa install` into `.claude/rules/<id>.md`. They are loaded into your standing instructions via `@` imports here so Claude Code resolves them on every invocation (the `.claude/rules/` directory is not auto-loaded by the harness — the imports are what wire them in).
+
+Add a new rule by: (1) dropping an `.md` under `./rules/`, (2) adding a `type: local` entry to `rules:` in `capabilities.yaml` pointing at it, (3) adding an `@` import below, (4) re-running `capa install`.
+
+@.claude/rules/variants-as-compositions.md
+@.claude/rules/auto-launch-studio.md
+@.claude/rules/brand-icons-via-simple-icons.md
+
+---
+
 ## Engine Selection Guide
 
 **Remotion is always the base.** Every video project uses Remotion as the primary composition engine — it handles the final timeline, scene sequencing, transitions, typography, branding, and audio. ManimGL is used **only** for specific scenes that require mathematical animation, algorithmic visualization, or LaTeX rendering. Those clips are rendered to `.mp4` and embedded into the Remotion composition.
