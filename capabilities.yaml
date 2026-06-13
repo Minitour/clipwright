@@ -2,10 +2,12 @@ options:
   requiresCommands:
     - cli: node
       description: >-
-        Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Install from https://nodejs.org/en/download/
+        Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+        Install from https://nodejs.org/en/download/
     - cli: uv
       description: >-
-        UV is a tool for managing Python projects. Install from https://docs.astral.sh/uv/getting-started/installation/
+        UV is a tool for managing Python projects. Install from
+        https://docs.astral.sh/uv/getting-started/installation/
     - cli: ffmpeg
       description: >-
         FFmpeg is a free and open-source software for video and audio
@@ -32,7 +34,8 @@ skills:
     def:
       path: skills/text-to-speech
       description: >-
-        Hugging Face text-to-speech (Transformers pipeline), uv setup, hf_tts.py CLI, WAV/MP3 export
+        Hugging Face text-to-speech (Transformers pipeline), uv setup, hf_tts.py
+        CLI, WAV/MP3 export
   - id: characters
     type: local
     def:
@@ -41,20 +44,43 @@ skills:
         Programmatic character/avatar design for Remotion — react-peeps based,
         with cast scaffolding via YAML → typed cast.ts and a generated
         Character.tsx wrapper that bakes in the skill's house style.
+  - id: infographic-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-creator
+  - id: infographic-syntax-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-syntax-creator
+  - id: infographic-structure-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-structure-creator
+  - id: infographic-item-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-item-creator
 
 agents:
   base:
     type: local
     path: ./WORKFLOW.md
-  # Project-level rules folded into CLAUDE.md/AGENTS.md as named capa marker
-  # blocks. Edit a rule's content here without touching WORKFLOW.md; each entry
-  # has its own id and is upserted on every `capa install`.
+  # Project rules live as standalone markdown files under ./rules/ so they
+  # can be edited/diffed/linted without YAML quoting weirdness or collision
+  # with CAPA's ${VarName} credential interpolation.
   #
-  # Note: the top-level `rules:` section is the more semantically correct fit,
-  # but as of the current CAPA version it writes rules to .claude/rules/*.md —
-  # a directory Claude Code's harness does not auto-load. Until that's
-  # resolved upstream, agents.additional is the verified path for getting
-  # content into CLAUDE.md.
+  # CAPA doesn't currently support a portable "local rule" source type:
+  #   - type: local for agents.additional errors with "Unknown agent snippet type: local"
+  #   - type: remote with file:// requires an ABSOLUTE path, which kills portability
+  #     across checkouts
+  #   - the top-level rules: section writes to .claude/rules/*.md, which Claude
+  #     Code's harness does not auto-load
+  #
+  # The workaround is a single short index snippet folded into CLAUDE.md that
+  # names each rule's trigger and file path. The agent reads the indexed file
+  # when the trigger matches — one extra Read in exchange for portability.
+  # Adding a new rule = drop an .md under ./rules/ and append a bullet to the
+  # index below.
   additional:
     - type: inline
       id: capa_tool_usage
@@ -63,78 +89,33 @@ agents:
         then use `call_tool` to invoke the relevant tool.
 
     - type: inline
-      id: variants-as-compositions
+      id: project-rules-index
       content: |
-        ## Variants are new Compositions, not cloned projects
+        ## Project rules — read the relevant rule file before acting
 
-        When the user asks for "another version" of an existing Remotion video — a
-        different aspect ratio (Instagram Reels, vertical), different cast,
-        different palette, different language, different copy — **add a new
-        `<Composition>` to the existing project's `Root.tsx`**. Do **not** clone
-        the project directory.
+        Each rule below names the trigger and the file. When the trigger
+        matches the task at hand, Read the file BEFORE writing code so its
+        guidance shapes what you build.
 
-        **Why:** Remotion's composition model is built for this. Multiple
-        compositions in one project share scenes, components, cast, audio,
-        fonts, brand constants, and the build pipeline. Cloning fragments edits
-        across copies, duplicates `node_modules` and rendered assets, and lets
-        the variants drift over time.
+        - **Variants of an existing video** — read `rules/variants-as-compositions.md`
+          whenever the user asks for "another version", "a version with X",
+          "an Instagram Reels version", or any phrasing that means "the same
+          video but different". The rule covers when to add a new
+          `<Composition>` vs when to start a new project, plus how to model
+          each common variant kind (aspect ratio, content, cast, timing).
 
-        **Trigger phrases:** "give me another version", "a version with X", "an
-        Instagram Reels version", "a portrait/landscape version", "the same but
-        with X", "make a variant", "show me how it would look with X".
+        - **Live preview during scene building** — read `rules/auto-launch-studio.md`
+          before working on the first scene of any new Remotion project. The
+          rule covers when to launch Remotion Studio, the one-instance
+          guarantee, and the headless fallback.
 
-        **How to model each variant kind:**
-
-        - **Different aspect ratio** — register a second `<Composition
-          id="MainReel" component={MainVideo} width={1080} height={1920} ... />`
-          alongside the primary one. Scenes use `useVideoConfig()` to detect
-          dimensions and reflow.
-        - **Different content (icons, copy, cast, palette)** — parameterize the
-          master `MainVideo` via `inputProps`. Register a second `<Composition
-          id="MainVideoAlt" defaultProps={{ variant: 'alt' }} ... />`. Scenes
-          read `useInputProps()` and branch.
-        - **Different cast** — declare both casts (`cast.yaml` + `cast-alt.yaml`),
-          generate two `cast.ts` outputs, pick via `inputProps`. Or co-design
-          one cast that both variants share.
-        - **Faster cut / different timing** — register a sibling root component
-          with compressed timings as a separate `<Composition>`. See the
-          `capa-launch` project for an example.
-
-        **Litmus test:** if the only file that needs to differ between the two
-        outputs is the `<Composition>` registration (or its `defaultProps`), it's
-        a variant — same project, new composition. If the two outputs require
-        different scene structures, different timelines, or different audio
-        scripts, they're separate projects.
-
-    - type: inline
-      id: auto-launch-studio
-      content: |
-        ## Auto-launch Remotion Studio on first frame
-
-        **As soon as Scene 1 type-checks and renders a still successfully** (end
-        of Step 6 Phase 1), launch Remotion Studio in the background and open
-        it in the user's browser — without being asked. Hot reload gives the
-        user something to watch while remaining scenes, audio, and assembly are
-        built, instead of waiting for a finished mp4.
-
-        ```bash
-        cd projects/<project>/remotion
-        npx remotion studio --no-open &   # background — capture port from banner
-        open "http://localhost:<port>"     # auto-open
-        ```
-
-        **Only one Studio instance at a time.** Before launching, check for an
-        existing `remotion studio` background task and stop it if it's for a
-        different project. If one is already running for the current project,
-        don't start a second.
-
-        Variants registered via the `variants-as-compositions` pattern appear in
-        the same Studio automatically via hot reload — no second Studio is
-        needed when adding compositions later.
-
-        Mention the URL to the user in plain text after launching so they can
-        open it themselves if `open` fails (e.g. headless environments).
+        - **Brand / tool / platform icons** — read `rules/brand-icons-via-simple-icons.md`
+          whenever a scene needs to show a tool, company, or platform (agent
+          name pills, integration grids, "as seen in" rows, comparison tables,
+          social proof, footer logos). The rule covers verifying slugs,
+          installing per-project, the canonical `<BrandIcon>` component, the
+          tree-shaking trap to avoid, the text-pill fallback, and the legal
+          disclaimer.
 
 servers: []
 tools: []
-

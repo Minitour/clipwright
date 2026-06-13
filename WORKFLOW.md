@@ -43,6 +43,8 @@ Use the table below to decide **which scenes within a project need ManimGL clips
 | Map animations | Remotion | Mapbox integration, animated maps |
 | Captioned/subtitled video | Remotion | SRT import, caption display, voiceover with local TTS |
 | Characters/avatars in scenes | Remotion | react-peeps React components rendered into the timeline; animated with standard Remotion interpolate/spring |
+| Statistics / data infographics | Infographic skills (`infographic-creator` et al.) + Remotion | Load the `infographic-creator` skill — it generates the AntV declarative syntax that renders to SVG. Embed the SVG inside the Remotion scene; animate via the wrapper. |
+| Brand / tool / platform logos | Remotion + `simple-icons` | Look up via the canonical slug (see `node_modules/simple-icons/icons/` or `simple-icons.org`), import the icon as `siCamelCaseSlug`, render via a small `<BrandIcon icon={…} />` component. Plain text pill only when the slug genuinely doesn't exist. |
 
 **Pipeline for ManimGL clips:** Render each ManimGL scene to `manim/output/`, copy the `.mp4` files into `remotion/public/manim/`, and reference them using `<OffthreadVideo>` in the Remotion composition. Remotion always produces the final deliverable.
 
@@ -307,7 +309,7 @@ Formalize the storyboard into a structured plan. **Write it to `projects/<projec
 3. **Scene Breakdown** — Table of scenes with: number, title, duration, description, engine (if hybrid).
 4. **Timeline** — Visual timeline showing scene order and cumulative duration.
 5. **Visual Style Guide** — Colors (from `[brand.colors]` or overridden), fonts (from `[brand.fonts]` or overridden), animation style, transition type, reference examples.
-6. **Asset Inventory** — List of all required assets: images, audio, video clips, fonts, data files. Mark each as "provided by user", "to be created", or "to be sourced". Include brand logo if `[brand.logo]` is configured and watermark is enabled.
+6. **Asset Inventory** — List of all required assets: images, audio, video clips, fonts, data files. Mark each as "provided by user", "to be created", "from simple-icons" (for any tool/company/platform logo — check the library before listing as "to be sourced"), or "to be sourced". Include brand logo if `[brand.logo]` is configured and watermark is enabled.
 7. **Cast** — Table of characters that appear in the video. Columns: id (kebab-case), role, key visual traits (hair, face, body, accessory). One row per character. This table is the source of truth that gets translated into `characters/cast.yaml` in Step 5f. Omit this section if the video has no characters.
 8. **Audio Plan** — Voiceover script (if any), music tracks, sound effects, timing. Default volume levels from `[audio]`.
 9. **Technical Specifications** — Resolution, FPS, codec, output format (from effective configuration).
@@ -394,12 +396,13 @@ Build each scene incrementally, following the approved plan. **Implement one sce
 2. For each scene, create a component in `remotion/src/scenes/`.
 3. Register it as a `<Composition>` in `remotion/src/Root.tsx` with correct duration, FPS, and dimensions.
 4. Implement static layout first (positioning, text, images) — use the **full canvas**. For portrait (9:16), fill the vertical space; do not leave large empty regions.
-5. Add animations using `useCurrentFrame()`, `interpolate()`, and `spring()`.
-6. **After Scene 1 renders successfully** (e.g. `npx remotion still` produces a clean image), **launch Remotion Studio in the background and open it for the user** — see the "Live preview" section above. Build the remaining scenes with Studio running so each new scene appears via hot reload as it's written. Never run more than one Studio instance at a time.
-7. For scenes that will contain ManimGL clips, add a placeholder `<OffthreadVideo>` with `objectFit: "cover"`. The actual `.mp4` will be placed later.
-7. Add transitions between scenes using `<TransitionSeries>` if applicable.
-8. When a scene uses characters, load the **characters** skill (`skills/characters/SKILL.md`) first. Reference cast via `<Character id="narrator" />` — never import `react-peeps` directly in scene files. See `rules/animation.md` for entrance, idle, gesture, and exit patterns.
-9. Preview in Remotion Studio: `npx remotion studio` (from the project's `remotion/` directory).
+5. **Brand / tool / platform references** — whenever a scene needs to show a tool, company, or platform (agent logos, integration grids, comparison tables, etc.), look it up in `simple-icons` first. Install with `npm install simple-icons -w projects/<project>/remotion`, verify the slug exists under `node_modules/simple-icons/icons/<slug>.svg`, then import the named icon (`import { siReact } from 'simple-icons'`) and render via a small `<BrandIcon>` component (template in `rules/brand-icons-via-simple-icons.md`). Do **not** invent slugs — verified-before-import is the same lesson the characters skill learned the hard way. Fall back to a text pill only when the slug genuinely doesn't exist.
+6. Add animations using `useCurrentFrame()`, `interpolate()`, and `spring()`.
+7. **After Scene 1 renders successfully** (e.g. `npx remotion still` produces a clean image), **launch Remotion Studio in the background and open it for the user** — see the "Live preview" section above. Build the remaining scenes with Studio running so each new scene appears via hot reload as it's written. Never run more than one Studio instance at a time.
+8. For scenes that will contain ManimGL clips, add a placeholder `<OffthreadVideo>` with `objectFit: "cover"`. The actual `.mp4` will be placed later.
+9. Add transitions between scenes using `<TransitionSeries>` if applicable.
+10. When a scene uses characters, load the **characters** skill (`skills/characters/SKILL.md`) first. Reference cast via `<Character id="narrator" />` — never import `react-peeps` directly in scene files. See `rules/animation.md` for entrance, idle, gesture, and exit patterns.
+11. Preview in Remotion Studio: `npx remotion studio` (from the project's `remotion/` directory).
 
 **Phase 2 — ManimGL clips (only scenes that need them):**
 1. Create the scene file in `manim/scenes/`.
@@ -574,6 +577,20 @@ npm install                 # from workspace root — hoists deps via workspaces
 ### Adding a Remotion dependency
 ```bash
 npm install <package> -w projects/<project>/remotion   # from workspace root
+```
+
+### Brand icons via simple-icons
+```bash
+# Install (per-project, in the Remotion workspace)
+npm install simple-icons -w projects/<project>/remotion
+
+# Confirm a slug exists before importing it
+ls node_modules/simple-icons/icons/<slug>.svg
+```
+```tsx
+import { siReact, type SimpleIcon } from "simple-icons";
+// fill={`#${siReact.hex}`}  →  brand color
+// d={siReact.path}           →  24×24 viewBox SVG path
 ```
 
 ### Previewing Remotion

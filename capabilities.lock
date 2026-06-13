@@ -1,6 +1,6 @@
 version: 1
-generator: capa@1.9.7
-generatedAt: '2026-06-13T19:44:05.839Z'
+generator: capa@1.9.10
+generatedAt: '2026-06-13T20:08:46.286Z'
 skills:
   - id: capabilities-manager
     source: github
@@ -8,8 +8,40 @@ skills:
     skillName: capabilities-manager
     requestedVersion: null
     requestedRef: null
-    resolvedRef: 43bd5990ed610c575e312252a15db76fac0baf91
-    resolvedVersion: null
+    resolvedRef: 01c151901960d8b9a4a8099aa7af716ee44b6fdc
+    resolvedVersion: v1.9.7
+  - id: infographic-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: 0.2.19
+  - id: infographic-item-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-item-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: 0.2.19
+  - id: infographic-structure-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-structure-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: 0.2.19
+  - id: infographic-syntax-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-syntax-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: 0.2.19
   - id: manim
     source: github
     repo: adithya-s-k/manim_skill
@@ -24,7 +56,7 @@ skills:
     skillName: remotion
     requestedVersion: null
     requestedRef: null
-    resolvedRef: 8ee3b907f4e0d31e5ca3f6b27211c63205babb0a
-    resolvedVersion: null
+    resolvedRef: 4f6483de8bf33a1e1dfdaf1f1e7921636f32cb5b
+    resolvedVersion: v4.0.475
 plugins: []
 hooks: []
