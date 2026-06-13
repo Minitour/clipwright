@@ -65,17 +65,45 @@ agents:
   base:
     type: local
     path: ./WORKFLOW.md
-  # All agent guidance — guiding principles, the project-rules index, the
-  # setup_tools/call_tool reminder, the 10-step workflow — lives in the
-  # base file (WORKFLOW.md), and each rule body lives at ./rules/<id>.md.
-  # Nothing is inlined here. agents.additional is intentionally omitted:
-  # CAPA doesn't currently support a portable local source for additional
-  # snippets (type: local errors; type: remote with file:// requires an
-  # absolute path that breaks across checkouts), and any inline content
-  # would collide with CAPA's ${VarName} credential interpolation when
-  # examples contain JS template literals. If you need to add agent
-  # guidance, edit WORKFLOW.md or drop a new rule under ./rules/ and
-  # append a bullet to its "Project Rules" section.
+  # Per-task rules are declared under the top-level `rules:` section below,
+  # each pointing at a standalone markdown file. There are no agents.additional
+  # snippets — agent guidance lives in WORKFLOW.md (the base) and in the
+  # individual rule files.
+
+# Project rules — installed by `capa install` into .claude/rules/<id>.md
+# from the local file at `path`. Each rule has a trigger (described in
+# `description`) and a body (the linked .md). Add new rules by dropping
+# an .md under ./rules/ and appending an entry here.
+rules:
+  - id: variants-as-compositions
+    type: local
+    path: ./rules/variants-as-compositions.md
+    alwaysApply: true
+    description: >-
+      Variants of an existing video are new Compositions in the same project,
+      never cloned project directories. Read before responding to any "give me
+      another version with X" / "Instagram Reels version" / "same but with Y"
+      phrasing.
+
+  - id: auto-launch-studio
+    type: local
+    path: ./rules/auto-launch-studio.md
+    alwaysApply: true
+    description: >-
+      Launch Remotion Studio in the background as soon as Scene 1 renders a
+      still — gives the user something to watch as the build progresses. Never
+      run more than one Studio instance. Read before working on Scene 1 of any
+      new Remotion project.
+
+  - id: brand-icons-via-simple-icons
+    type: local
+    path: ./rules/brand-icons-via-simple-icons.md
+    alwaysApply: true
+    description: >-
+      When a scene needs to show a tool, company, or platform (agent name pills,
+      integration grids, "as seen in" rows, comparison tables, social proof,
+      footer logos), look it up in `simple-icons` first. Read before placing any
+      brand/tool/platform reference.
 
 servers: []
 tools: []

@@ -23,18 +23,6 @@ These are your instructions when creating and iterating on video projects. You a
 
 ---
 
-## Project Rules
-
-Project-level behavior rules live as standalone markdown files under `./rules/`. Each rule names a **trigger** and a **file**. When the trigger matches the task at hand, **Read the file before writing code** so its guidance shapes what you build. Add new rules by dropping an `.md` under `./rules/` and appending a bullet here.
-
-- **Variants of an existing video** — read `rules/variants-as-compositions.md` whenever the user asks for "another version", "a version with X", "an Instagram Reels version", or any phrasing that means "the same video but different". The rule covers when to add a new `<Composition>` vs. when to start a new project, plus how to model each common variant kind (aspect ratio, content, cast, timing).
-
-- **Live preview during scene building** — read `rules/auto-launch-studio.md` before working on the first scene of any new Remotion project. The rule covers when to launch Remotion Studio, the one-instance guarantee, and the headless fallback.
-
-- **Brand / tool / platform icons** — read `rules/brand-icons-via-simple-icons.md` whenever a scene needs to show a tool, company, or platform (agent name pills, integration grids, "as seen in" rows, comparison tables, social proof, footer logos). The rule covers verifying slugs, installing per-project, the canonical `<BrandIcon>` component, the tree-shaking trap to avoid, the text-pill fallback, and the legal disclaimer.
-
----
-
 ## Engine Selection Guide
 
 **Remotion is always the base.** Every video project uses Remotion as the primary composition engine — it handles the final timeline, scene sequencing, transitions, typography, branding, and audio. ManimGL is used **only** for specific scenes that require mathematical animation, algorithmic visualization, or LaTeX rendering. Those clips are rendered to `.mp4` and embedded into the Remotion composition.
