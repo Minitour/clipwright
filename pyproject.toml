@@ -7,6 +7,7 @@ dependencies = [
     "audioop-lts>=0.2.2",
     "kokoro>=0.9.2",
     "manimgl>=1.7.2",
+    "pyyaml>=6.0",
     "setuptools>=69,<81",
     "soundfile>=0.13.1",
 ]

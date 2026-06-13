@@ -1,0 +1,53 @@
+{
+  "_comment": "Authoritative valid prop values for react-peeps. EXTRACTED from the library's installed .d.ts files — do not hand-edit unless updating to a new library version. The scaffolder validates against this file. Top-level keys under each library are exhaustive; an unknown prop name is rejected. The `body` value space is the merged union of BustPose | StandingPose | SittingPose (the library accepts any of the three at the same `body` prop).",
+  "react-peeps": {
+    "_ts_types": {
+      "_doc": "Mapping from cast.yaml prop name -> react-peeps TypeScript type. Used by the scaffolder to emit strictly-typed cast.ts that round-trips through <Peep {...spec} /> without `as` casts.",
+      "hair": "HairType",
+      "face": "FaceType",
+      "accessory": "AccessoryType",
+      "facialHair": "FacialHairType",
+      "body": "BustPoseType | StandingPoseType | SittingPoseType"
+    },
+    "hair": [
+      "Afro", "Bald", "BaldSides", "BaldTop", "Bangs", "BangsFilled", "BantuKnots", "Beanie",
+      "Bear", "Bun", "BunCurly", "BunFancy", "Buns", "CornRows", "CornRowsFilled", "DocBouffant",
+      "DocShield", "DocSurgery", "FlatTop", "FlatTopLong", "GrayBun", "GrayMedium", "GrayShort",
+      "HatHip", "Hijab", "Long", "LongAfro", "LongBangs", "LongCurly", "Medium", "MediumBangs",
+      "MediumBangsFilled", "MediumLong", "MediumShade", "MediumShort", "MediumStraight",
+      "Mohawk", "MohawkDino", "Pomp", "ShavedRight", "ShavedSides", "ShavedWavy", "Short",
+      "ShortCurly", "ShortMessy", "ShortScratch", "ShortVolumed", "ShortWavy", "Turban",
+      "Twists", "TwistsVolumed"
+    ],
+    "face": [
+      "Angry", "Awe", "Blank", "Calm", "CalmNM", "Cheeky", "CheersNM", "Concerned",
+      "ConcernedFear", "Contempt", "Cute", "Cyclops", "Driven", "EatingHappy", "Explaining",
+      "EyesClosed", "Fear", "Hectic", "LoveGrin", "LoveGrinTeeth", "Monster", "OldAged",
+      "Rage", "Serious", "Smile", "SmileBig", "SmileLol", "SmileNM", "SmileTeeth", "Solemn",
+      "Suspicious", "Tired", "VeryAngry"
+    ],
+    "body": [
+      "ArmsCrossed", "BlazerBlackTee", "ButtonShirt", "Coffee", "Device", "DotJacket", "Dress",
+      "Explaining", "FurJacket", "Gaming", "Geek", "Hoodie", "Killer", "Paper", "PocketShirt",
+      "PointingUp", "PoloSweater", "Selena", "Shirt", "ShirtCoat", "ShirtFilled", "SportyShirt",
+      "StripedShirt", "Sweater", "SweaterDots", "Thunder", "Turtleneck", "Whatever",
+      "BlazerBW", "BlazerPantsBW", "BlazerPantsWB", "BlazerWB", "CrossedArmsBW", "CrossedArmsWB",
+      "Doc", "DocProtectiveClothe", "DocStethoscope", "EasingBW", "EasingWB", "PointingFingerBW",
+      "PointingFingerWB", "PolkaDots", "RestingBW", "RestingWB", "RoboDanceBW", "RoboDanceOutline",
+      "RoboDanceWB", "ShirtBW", "ShirtPantsBW", "ShirtPantsWB", "ShirtWB", "WalkingBW",
+      "WalkingFilled", "WalkingWB", "Bike", "ClosedLegBW", "ClosedLegWB", "CrossedLegs",
+      "HandsBackBW", "HandsBackWB", "MediumBW", "MediumWB", "OneLegUpBW", "OneLegUpWB", "WheelChair"
+    ],
+    "accessory": [
+      "Eyepatch", "GlassAviator", "GlassButterfly", "GlassButterflyOutline", "GlassClubmaster",
+      "GlassRound", "GlassRoundThick", "None", "SunglassClubmaster", "SunglassWayfarer"
+    ],
+    "facialHair": [
+      "Chin", "Dali", "Full", "FullMajestic", "FullMedium", "Goatee", "GoateeCircle", "GrayFull",
+      "Handlebars", "Imperial", "MajesticHandlebars", "MoustacheThin", "None", "Painters",
+      "PaintersFilled", "Swashbuckler", "Yosemite"
+    ],
+    "_color_props": ["strokeColor", "backgroundColor", "wrapperBackground"],
+    "_passthrough_props": ["style", "circleStyle", "className"]
+  }
+}

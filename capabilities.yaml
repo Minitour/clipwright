@@ -2,10 +2,12 @@ options:
   requiresCommands:
     - cli: node
       description: >-
-        Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Install from https://nodejs.org/en/download/
+        Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+        Install from https://nodejs.org/en/download/
     - cli: uv
       description: >-
-        UV is a tool for managing Python projects. Install from https://docs.astral.sh/uv/getting-started/installation/
+        UV is a tool for managing Python projects. Install from
+        https://docs.astral.sh/uv/getting-started/installation/
     - cli: ffmpeg
       description: >-
         FFmpeg is a free and open-source software for video and audio
@@ -32,17 +34,76 @@ skills:
     def:
       path: skills/text-to-speech
       description: >-
-        Hugging Face text-to-speech (Transformers pipeline), uv setup, hf_tts.py CLI, WAV/MP3 export
+        Hugging Face text-to-speech (Transformers pipeline), uv setup, hf_tts.py
+        CLI, WAV/MP3 export
+  - id: characters
+    type: local
+    def:
+      path: skills/characters
+      description: >-
+        Programmatic character/avatar design for Remotion — react-peeps based,
+        with cast scaffolding via YAML → typed cast.ts and a generated
+        Character.tsx wrapper that bakes in the skill's house style.
+  - id: infographic-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-creator
+  - id: infographic-syntax-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-syntax-creator
+  - id: infographic-structure-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-structure-creator
+  - id: infographic-item-creator
+    type: github
+    def:
+      repo: antvis/Infographic::skills/infographic-item-creator
 
 agents:
   base:
     type: local
     path: ./WORKFLOW.md
-  additional:
-    - type: inline
-      id: capa_tool_usage
-      content: >-
-        After learning a new skill, call the `setup_tools` tool to activate it,
-        then use `call_tool` to invoke the relevant tool.
+  # Per-task rules are declared under the top-level `rules:` section below,
+  # each pointing at a standalone markdown file. There are no agents.additional
+  # snippets — agent guidance lives in WORKFLOW.md (the base) and in the
+  # individual rule files.
+
+# Project rules — installed by `capa install` into .claude/rules/<id>.md
+# from the local file at `path`. Each rule has a trigger (described in
+# `description`) and a body (the linked .md). Add new rules by dropping
+# an .md under ./rules/ and appending an entry here.
+rules:
+  - id: variants-as-compositions
+    type: local
+    path: ./rules/variants-as-compositions.md
+    alwaysApply: true
+    description: >-
+      Variants of an existing video are new Compositions in the same project,
+      never cloned project directories. Read before responding to any "give me
+      another version with X" / "Instagram Reels version" / "same but with Y"
+      phrasing.
+
+  - id: auto-launch-studio
+    type: local
+    path: ./rules/auto-launch-studio.md
+    alwaysApply: true
+    description: >-
+      Launch Remotion Studio in the background as soon as Scene 1 renders a
+      still — gives the user something to watch as the build progresses. Never
+      run more than one Studio instance. Read before working on Scene 1 of any
+      new Remotion project.
+
+  - id: brand-icons-via-simple-icons
+    type: local
+    path: ./rules/brand-icons-via-simple-icons.md
+    alwaysApply: true
+    description: >-
+      When a scene needs to show a tool, company, or platform (agent name pills,
+      integration grids, "as seen in" rows, comparison tables, social proof,
+      footer logos), look it up in `simple-icons` first. Read before placing any
+      brand/tool/platform reference.
+
 servers: []
 tools: []

@@ -1,0 +1,62 @@
+version: 1
+generator: capa@1.9.10
+generatedAt: '2026-06-13T20:33:42.478Z'
+skills:
+  - id: capabilities-manager
+    source: github
+    repo: infragate/capa
+    skillName: capabilities-manager
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 01c151901960d8b9a4a8099aa7af716ee44b6fdc
+    resolvedVersion: null
+  - id: infographic-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: null
+  - id: infographic-item-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-item-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: null
+  - id: infographic-structure-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-structure-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: null
+  - id: infographic-syntax-creator
+    source: github
+    repo: antvis/Infographic
+    skillName: skills/infographic-syntax-creator
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 69eae2ee4bd856fa2af9a8ffbe7f5d173d76c6b7
+    resolvedVersion: null
+  - id: manim
+    source: github
+    repo: adithya-s-k/manim_skill
+    skillName: manimgl-best-practices
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: cef045011722d285692e3381d12d4d637da56e18
+    resolvedVersion: null
+  - id: remotion
+    source: github
+    repo: remotion-dev/remotion
+    skillName: remotion
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 4f6483de8bf33a1e1dfdaf1f1e7921636f32cb5b
+    resolvedVersion: null
+plugins: []
+hooks: []

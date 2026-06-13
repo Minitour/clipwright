@@ -10,15 +10,28 @@ These are your instructions when creating and iterating on video projects. You a
 - **Iterative and incremental**: Propose scenes, get the user's review, and implement only after approval. Show previews early and often.
 - **Top-down construction**: Establish the overall narrative, structure, and timing before coding individual scenes or compositions.
 - **Remotion-first composition**: Remotion is **always** the primary composition engine — it owns the final video timeline, scene sequencing, transitions, text, branding, and audio. ManimGL is a **supplementary** tool used only when a scene requires mathematical animations, algorithmic visualizations, or LaTeX-heavy diagrams. Those ManimGL clips are rendered to `.mp4` and embedded into the Remotion composition via `<OffthreadVideo>`. Never build a ManimGL-only project unless the user explicitly requests it.
-- **Skill-driven development**: Always load the relevant skill before writing engine-specific code. Read the **remotion** skill (`skills/remotion/SKILL.md`) before writing Remotion code. Read the **manim** skill (`skills/manim/SKILL.md`) before writing ManimGL code. Then load specific rule files as needed for the task at hand (e.g. `rules/transitions.md`, `rules/tex.md`).
+- **Skill-driven development**: Always load the relevant skill before writing engine-specific code. Read the **remotion** skill (`skills/remotion/SKILL.md`) before writing Remotion code. Read the **manim** skill (`skills/manim/SKILL.md`) before writing ManimGL code. Then load specific rule files as needed for the task at hand (e.g. `rules/transitions.md`, `rules/tex.md`). After learning a new skill, call the `setup_tools` tool to activate it, then use `call_tool` to invoke the relevant tool.
 - **Reuse skill scripts — never duplicate**: When a skill provides scripts (e.g. `skills/text-to-speech/scripts/kokoro_tts.py`), **call them directly** via `uv run python skills/...` or import their functions. If project-specific behavior is needed (e.g. batch processing, timeline generation), create a thin wrapper in the project's `scripts/` directory that delegates core work to the skill script. Never copy-paste skill code into project files.
 - **Shared workspace environments**: All projects share a single Python virtual environment at the workspace root (managed by `uv` with the root `pyproject.toml`). Never create per-project `pyproject.toml`, `.venv`, or `uv.lock` files. For Node.js, use npm workspaces so Remotion dependencies are hoisted to the workspace root `node_modules`. See the **Shared Environments** section for details.
 - **Project isolation** (source code): Each video lives in its own directory under `projects/`. Projects are independent — never share source code or state across project boundaries. Environments and dependencies, however, are shared at the workspace level.
 - **Plan approval before implementation**: In Step 3, write the video plan to `projects/<project>/plan/PLAN.md` and present it in the conversation. Do **not** proceed to implementation until the user has **explicitly approved** the plan.
 - **Audio-driven timing**: Always plan voiceover from the start (Step 2), not as an afterthought. Generate speech as **individual per-segment audio files** (one per scene/beat), not a single monolithic track. Derive visual segment durations from measured audio lengths plus a small padding (~300 ms), so speech and visuals stay synchronized without silence gaps.
 - **Frame-aware layout**: Design all content to fill the target frame. For portrait/vertical formats (9:16), use the full canvas height and width — do not place small, centered cards with excessive padding. When embedding ManimGL clips, ensure the Manim logical frame is configured for the target aspect ratio and that mobjects are scaled and positioned to use the available space. Use `objectFit: "cover"` for embedded video and verify content isn't tiny.
+- **Cast-first character design**: When a video features characters (narrator, presenter, customer, etc.), define them once in a project cast and reuse those identities across scenes. Use the `characters` skill (react-peeps based). Scenes render cast members via a shared `<Character>` wrapper; never re-spec a character's look inline in a scene file.
 - **Preview before polish**: Get rough animations working before fine-tuning timing, colors, and transitions. Working ugly beats broken beautiful.
 - **Preserve user assets**: Never modify or overwrite user-provided assets (videos, images, audio). Copy or reference them in place.
+
+---
+
+## Project Rules
+
+The rules below are declared as `type: local` entries in `capabilities.yaml` and installed by `capa install` into `.claude/rules/<id>.md`. They are loaded into your standing instructions via `@` imports here so Claude Code resolves them on every invocation (the `.claude/rules/` directory is not auto-loaded by the harness — the imports are what wire them in).
+
+Add a new rule by: (1) dropping an `.md` under `./rules/`, (2) adding a `type: local` entry to `rules:` in `capabilities.yaml` pointing at it, (3) adding an `@` import below, (4) re-running `capa install`.
+
+@.claude/rules/variants-as-compositions.md
+@.claude/rules/auto-launch-studio.md
+@.claude/rules/brand-icons-via-simple-icons.md
 
 ---
 
@@ -41,6 +54,9 @@ Use the table below to decide **which scenes within a project need ManimGL clips
 | Motion graphics with web tech | Remotion | CSS animations, Three.js, Lottie, TailwindCSS |
 | Map animations | Remotion | Mapbox integration, animated maps |
 | Captioned/subtitled video | Remotion | SRT import, caption display, voiceover with local TTS |
+| Characters/avatars in scenes | Remotion | react-peeps React components rendered into the timeline; animated with standard Remotion interpolate/spring |
+| Statistics / data infographics | Infographic skills (`infographic-creator` et al.) + Remotion | Load the `infographic-creator` skill — it generates the AntV declarative syntax that renders to SVG. Embed the SVG inside the Remotion scene; animate via the wrapper. |
+| Brand / tool / platform logos | Remotion + `simple-icons` | Look up via the canonical slug (see `node_modules/simple-icons/icons/` or `simple-icons.org`), import the icon as `siCamelCaseSlug`, render via a small `<BrandIcon icon={…} />` component. Plain text pill only when the slug genuinely doesn't exist. |
 
 **Pipeline for ManimGL clips:** Render each ManimGL scene to `manim/output/`, copy the `.mp4` files into `remotion/public/manim/`, and reference them using `<OffthreadVideo>` in the Remotion composition. Remotion always produces the final deliverable.
 
@@ -70,6 +86,7 @@ The `config.toml` file at the workspace root defines default preferences for eve
 | `[audio]` | Volume levels for voiceover, music, and sound effects; voiceover provider and voice |
 | `[manim]` | Background color, text color, quality preset |
 | `[remotion]` | TailwindCSS preference |
+| `[characters]` | Default avatar library, art direction, default stroke color, skin-tone palette |
 | `[style]` | Animation style, default transition, caption position, watermark toggle |
 
 ### Per-project overrides
@@ -90,6 +107,8 @@ All projects live under `projects/` at the workspace root. Each project is self-
 projects/<project-name>/
 ├── plan/
 │   └── PLAN.md                  # Video plan and storyboard (Step 3 output)
+├── characters/                   # Casting brief (only when the video has characters)
+│   └── cast.yaml                 # Per-character library + props; compiled to cast.ts
 ├── manim/                        # ManimGL sub-project
 │   ├── scenes/                   # Python scene files
 │   │   ├── scene_01_intro.py
@@ -102,15 +121,68 @@ projects/<project-name>/
 │   ├── public/                   # Static assets (images, audio, video, manim renders)
 │   ├── src/
 │   │   ├── Root.tsx              # Composition registry
-│   │   ├── components/           # Reusable visual components
+│   │   ├── cast.ts               # Generated from cast.yaml — typed cast record (when characters exist)
+│   │   ├── components/           # Reusable visual components (incl. Character.tsx wrapper)
 │   │   └── scenes/               # Individual scene compositions
 │   ├── package.json
 │   └── tsconfig.json
 ```
 
+**When the project has no characters**, the `characters/` directory and `cast.ts` are simply absent.
+
 **When ManimGL is not needed**, the `manim/` directory remains empty — it is ready if the project scope expands later.
 
 **When both engines are used**, ManimGL renders its scenes into `manim/output/`, and those clips are copied into `remotion/public/manim/` and referenced from Remotion via `<OffthreadVideo>`.
+
+---
+
+## Variants — Multiple Compositions in One Project
+
+When the user asks for "another version" of an existing video — a different aspect ratio (Instagram Reels, vertical), different cast, different palette, different language, different copy — **add a new `<Composition>` to the existing project's `Root.tsx`**. Do **not** clone the project directory.
+
+This is the canonical Remotion pattern: one project can register many compositions that share the same scenes, components, cast, audio, fonts, brand constants, and build pipeline. Cloning fragments edits across two copies, duplicates `node_modules` and rendered assets, and lets the variants drift over time.
+
+### Trigger phrases
+
+Any of "give me another version", "a version with X", "an Instagram Reels version", "a portrait/landscape version", "the same but with X", "make a variant", or "show me how it would look with X".
+
+### How to model each variant kind
+
+| Variant kind | Implementation |
+|---|---|
+| **Different aspect ratio** (e.g. Instagram Reels, vertical, 4K) | Register a second `<Composition id="MainReel" component={MainVideo} width={1080} height={1920} ... />` alongside the primary one. Use `useVideoConfig()` inside scenes to detect dimensions and reflow layout. |
+| **Different content** (icons, copy, cast, palette) | Parameterize the master `MainVideo` (or affected scenes) via `inputProps`. Register a second `<Composition id="MainVideoAlt" defaultProps={{ variant: 'alt' }} ... />`. Scenes read `useInputProps()` and switch behavior. |
+| **Different cast** | Either declare both casts in `cast.yaml` and `cast-alt.yaml`, generate two `cast.ts` outputs, and pick via `inputProps`; or co-design the cast so both variants share ids and only the avatar library / style differs. |
+| **Faster cut / different timing** | Register a separate `<Composition id="MainVideoFast" component={MainVideoFast} ... />` with its own duration and a sibling root component that reuses the same scenes but at compressed timings. See the `capa-launch` project for an existing example. |
+
+### Litmus test: variant vs new project
+
+If the only file that *needs* to differ between the two outputs is the `<Composition>` registration (or its `defaultProps`), it's a **variant** — same project, new composition. If the two outputs require different scene structures, different timelines, or different audio scripts, they're **separate projects**.
+
+### Render a variant
+
+```bash
+cd projects/<project>/remotion
+npx remotion render src/index.ts MainReel output/main-reel.mp4 --codec h264 --crf 18
+```
+
+Studio (see "Live preview" below) shows every registered composition automatically — the user can scrub each one without restarting anything.
+
+---
+
+## Live preview — Auto-launch Remotion Studio
+
+**As soon as Scene 1 type-checks and renders a still successfully** (typically the end of Step 6 Phase 1), launch Remotion Studio in the background and open it in the user's browser. Hot reload then gives the user something to watch while the remaining scenes, audio, and assembly are built — instead of waiting for a finished mp4.
+
+```bash
+cd projects/<project>/remotion
+npx remotion studio --no-open &   # background — capture port from the banner
+open "http://localhost:<port>"     # auto-open in browser
+```
+
+**Only one Studio instance at a time.** Before launching, check for an existing `remotion studio` background task. If one is running for a different project, stop it first. If one is already running for the current project, don't start a second.
+
+Variants registered in `Root.tsx` (per the section above) show up in the same Studio automatically via hot reload — no second Studio is needed when adding compositions later.
 
 ---
 
@@ -202,6 +274,7 @@ Read `config.toml` first. Then help the user clarify what video they want to cre
 - **Visual style** — Minimalist, colorful, 3b1b-style, corporate, playful, etc. Default animation style and transition come from `[style]`.
 - **Resolution and format** — Confirm or override the config defaults (show the user what's configured).
 - **Audio requirements** — Voiceover, background music, sound effects, or silent. Default volumes and voiceover provider come from `[audio]`.
+- **Cast** — Will the video feature avatar characters? If yes: how many, what roles (narrator, customer, presenter…), and any art-direction preferences. Defaults (library, stroke color, skin tones) come from `[characters]`.
 - **Assets provided** — Does the user have existing footage, images, or audio to incorporate?
 
 **Target output:** A concise project brief (2–5 sentences) that captures the above, noting any deviations from `config.toml` defaults. Confirm it with the user before proceeding.
@@ -230,6 +303,7 @@ Develop the narrative structure of the video. This is the creative backbone — 
 - Duration (approximate seconds)
 - **Narration script** (the exact text to be spoken — always include this unless the video is explicitly silent)
 - Visual description (what the viewer sees, which engine renders it)
+- **Characters present** — Which cast members appear in this beat and what they do (narrating, reacting, gesturing). Omit if the video has no cast.
 - Assets needed
 
 **Audio must be planned here, not added later.** If the plan includes voiceover (the default unless the user says otherwise), write the narration script for every scene in this step. Each scene's duration estimate should be based on the narration length, not arbitrary fixed values.
@@ -247,10 +321,11 @@ Formalize the storyboard into a structured plan. **Write it to `projects/<projec
 3. **Scene Breakdown** — Table of scenes with: number, title, duration, description, engine (if hybrid).
 4. **Timeline** — Visual timeline showing scene order and cumulative duration.
 5. **Visual Style Guide** — Colors (from `[brand.colors]` or overridden), fonts (from `[brand.fonts]` or overridden), animation style, transition type, reference examples.
-6. **Asset Inventory** — List of all required assets: images, audio, video clips, fonts, data files. Mark each as "provided by user", "to be created", or "to be sourced". Include brand logo if `[brand.logo]` is configured and watermark is enabled.
-7. **Audio Plan** — Voiceover script (if any), music tracks, sound effects, timing. Default volume levels from `[audio]`.
-8. **Technical Specifications** — Resolution, FPS, codec, output format (from effective configuration).
-9. **Open Questions** — Anything that needs user clarification before implementation.
+6. **Asset Inventory** — List of all required assets: images, audio, video clips, fonts, data files. Mark each as "provided by user", "to be created", "from simple-icons" (for any tool/company/platform logo — check the library before listing as "to be sourced"), or "to be sourced". Include brand logo if `[brand.logo]` is configured and watermark is enabled.
+7. **Cast** — Table of characters that appear in the video. Columns: id (kebab-case), role, key visual traits (hair, face, body, accessory). One row per character. This table is the source of truth that gets translated into `characters/cast.yaml` in Step 5f. Omit this section if the video has no characters.
+8. **Audio Plan** — Voiceover script (if any), music tracks, sound effects, timing. Default volume levels from `[audio]`.
+9. **Technical Specifications** — Resolution, FPS, codec, output format (from effective configuration).
+10. **Open Questions** — Anything that needs user clarification before implementation.
 
 Close the plan with a **"What I need from you"** checklist. State clearly that implementation will not begin until the user approves.
 
@@ -299,6 +374,23 @@ Move the `PLAN.md` into `projects/<project>/plan/`.
 
 If the plan includes voiceover, ensure `kokoro` (or the configured TTS package) and `soundfile` are in the root `pyproject.toml`. Run `uv sync` from the workspace root. Never create per-project Python environments.
 
+**5f. Initialize cast** (only if the plan includes characters):
+
+1. Install react-peeps into the project's Remotion sub-project (from workspace root):
+   ```bash
+   npm install react-peeps -w projects/<project>/remotion --legacy-peer-deps
+   ```
+   The `--legacy-peer-deps` flag is needed because react-peeps' peer dep is React `^16.12` while Remotion projects use React 19.
+2. Translate the plan's **Cast** table into `projects/<project>/characters/cast.yaml`. See `skills/characters/rules/casting.md` for the YAML shape.
+3. Scaffold the typed cast **and** the starter wrapper in one command — from the project's `remotion/` directory:
+   ```bash
+   uv run --project ../../.. python ../../../skills/characters/scripts/scaffold_cast.py \
+       ../characters/cast.yaml -o src/cast.ts \
+       --component src/components/Character.tsx
+   ```
+   The generated `Character.tsx` bakes in the skill's react-peeps house style (circular avatar, indigo background, black stroke, white fill, thin white rim, soft drop shadow — defaults from `[characters.peeps_style]` in `config.toml`). The script refuses to overwrite an existing `Character.tsx` unless `--force` is also passed, so hand-edits are safe.
+4. Verify the generated files type-check: `npx tsc --noEmit` (from the project's `remotion/`).
+
 ### Step 6 — Scene Implementation
 
 Build each scene incrementally, following the approved plan. **Implement one scene at a time** — do not batch-implement the entire video.
@@ -316,10 +408,13 @@ Build each scene incrementally, following the approved plan. **Implement one sce
 2. For each scene, create a component in `remotion/src/scenes/`.
 3. Register it as a `<Composition>` in `remotion/src/Root.tsx` with correct duration, FPS, and dimensions.
 4. Implement static layout first (positioning, text, images) — use the **full canvas**. For portrait (9:16), fill the vertical space; do not leave large empty regions.
-5. Add animations using `useCurrentFrame()`, `interpolate()`, and `spring()`.
-6. For scenes that will contain ManimGL clips, add a placeholder `<OffthreadVideo>` with `objectFit: "cover"`. The actual `.mp4` will be placed later.
-7. Add transitions between scenes using `<TransitionSeries>` if applicable.
-8. Preview in Remotion Studio: `npx remotion studio` (from the project's `remotion/` directory).
+5. **Brand / tool / platform references** — whenever a scene needs to show a tool, company, or platform (agent logos, integration grids, comparison tables, etc.), look it up in `simple-icons` first. Install with `npm install simple-icons -w projects/<project>/remotion`, verify the slug exists under `node_modules/simple-icons/icons/<slug>.svg`, then import the named icon (`import { siReact } from 'simple-icons'`) and render via a small `<BrandIcon>` component (template in `rules/brand-icons-via-simple-icons.md`). Do **not** invent slugs — verified-before-import is the same lesson the characters skill learned the hard way. Fall back to a text pill only when the slug genuinely doesn't exist.
+6. Add animations using `useCurrentFrame()`, `interpolate()`, and `spring()`.
+7. **After Scene 1 renders successfully** (e.g. `npx remotion still` produces a clean image), **launch Remotion Studio in the background and open it for the user** — see the "Live preview" section above. Build the remaining scenes with Studio running so each new scene appears via hot reload as it's written. Never run more than one Studio instance at a time.
+8. For scenes that will contain ManimGL clips, add a placeholder `<OffthreadVideo>` with `objectFit: "cover"`. The actual `.mp4` will be placed later.
+9. Add transitions between scenes using `<TransitionSeries>` if applicable.
+10. When a scene uses characters, load the **characters** skill (`skills/characters/SKILL.md`) first. Reference cast via `<Character id="narrator" />` — never import `react-peeps` directly in scene files. See `rules/animation.md` for entrance, idle, gesture, and exit patterns.
+11. Preview in Remotion Studio: `npx remotion studio` (from the project's `remotion/` directory).
 
 **Phase 2 — ManimGL clips (only scenes that need them):**
 1. Create the scene file in `manim/scenes/`.
@@ -496,6 +591,20 @@ npm install                 # from workspace root — hoists deps via workspaces
 npm install <package> -w projects/<project>/remotion   # from workspace root
 ```
 
+### Brand icons via simple-icons
+```bash
+# Install (per-project, in the Remotion workspace)
+npm install simple-icons -w projects/<project>/remotion
+
+# Confirm a slug exists before importing it
+ls node_modules/simple-icons/icons/<slug>.svg
+```
+```tsx
+import { siReact, type SimpleIcon } from "simple-icons";
+// fill={`#${siReact.hex}`}  →  brand color
+// d={siReact.path}           →  24×24 viewBox SVG path
+```
+
 ### Previewing Remotion
 ```bash
 cd projects/<project>/remotion
@@ -533,4 +642,12 @@ npm run generate-voice -w projects/<project>/remotion
 ### Concatenating ManimGL clips with FFmpeg (rare — usually embed in Remotion instead)
 ```bash
 ffmpeg -f concat -safe 0 -i projects/<project>/manim/output/filelist.txt -c copy projects/<project>/manim/output/final.mp4
+```
+
+### Scaffolding the project cast + starter wrapper (from the project's `remotion/` directory)
+```bash
+uv run --project ../../.. python ../../../skills/characters/scripts/scaffold_cast.py \
+    ../characters/cast.yaml -o src/cast.ts \
+    --component src/components/Character.tsx
+# Add --force to overwrite an existing Character.tsx (otherwise it's preserved).
 ```
