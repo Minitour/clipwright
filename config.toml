@@ -95,6 +95,23 @@ quality          = "high"        # low | medium | high | uhd
 [remotion]
 tailwind = true                  # Initialize projects with TailwindCSS support
 
+# ── Character Defaults ───────────────────────────────────────
+[characters]
+library         = "react-peeps"   # the characters skill currently supports react-peeps only
+art_direction   = "casual"        # casual | professional | playful — informs default prop choices when scaffolding a cast
+
+# Default circular-avatar treatment for react-peeps characters. The
+# scaffold_cast.py --component flag bakes these into the generated
+# Character.tsx wrapper; override per project by editing the constants
+# at the top of that wrapper.
+[characters.peeps_style]
+circle_bg         = "#818CF8"  # indigo — circle background (what shows around the body silhouette)
+character_stroke  = "#000000"  # outline / line art color
+character_fill    = "#FFFFFF"  # body/clothes silhouette fill
+border_color      = "#FFFFFF"  # thin rim around the circle
+border_ratio      = 0.012      # border width as a fraction of character size (e.g. 0.012 × 400 ≈ 5px)
+drop_shadow       = "0 14px 32px rgba(0, 0, 0, 0.45), 0 0 24px rgba(129, 140, 248, 0.18)"
+
 # ── Style Preferences ───────────────────────────────────────
 [style]
 animation_style = "smooth"       # smooth | snappy | cinematic

@@ -1,0 +1,30 @@
+version: 1
+generator: capa@1.9.7
+generatedAt: '2026-06-13T19:44:05.839Z'
+skills:
+  - id: capabilities-manager
+    source: github
+    repo: infragate/capa
+    skillName: capabilities-manager
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 43bd5990ed610c575e312252a15db76fac0baf91
+    resolvedVersion: null
+  - id: manim
+    source: github
+    repo: adithya-s-k/manim_skill
+    skillName: manimgl-best-practices
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: cef045011722d285692e3381d12d4d637da56e18
+    resolvedVersion: null
+  - id: remotion
+    source: github
+    repo: remotion-dev/remotion
+    skillName: remotion
+    requestedVersion: null
+    requestedRef: null
+    resolvedRef: 8ee3b907f4e0d31e5ca3f6b27211c63205babb0a
+    resolvedVersion: null
+plugins: []
+hooks: []

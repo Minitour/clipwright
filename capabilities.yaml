@@ -33,16 +33,108 @@ skills:
       path: skills/text-to-speech
       description: >-
         Hugging Face text-to-speech (Transformers pipeline), uv setup, hf_tts.py CLI, WAV/MP3 export
+  - id: characters
+    type: local
+    def:
+      path: skills/characters
+      description: >-
+        Programmatic character/avatar design for Remotion — react-peeps based,
+        with cast scaffolding via YAML → typed cast.ts and a generated
+        Character.tsx wrapper that bakes in the skill's house style.
 
 agents:
   base:
     type: local
     path: ./WORKFLOW.md
+  # Project-level rules folded into CLAUDE.md/AGENTS.md as named capa marker
+  # blocks. Edit a rule's content here without touching WORKFLOW.md; each entry
+  # has its own id and is upserted on every `capa install`.
+  #
+  # Note: the top-level `rules:` section is the more semantically correct fit,
+  # but as of the current CAPA version it writes rules to .claude/rules/*.md —
+  # a directory Claude Code's harness does not auto-load. Until that's
+  # resolved upstream, agents.additional is the verified path for getting
+  # content into CLAUDE.md.
   additional:
     - type: inline
       id: capa_tool_usage
       content: >-
         After learning a new skill, call the `setup_tools` tool to activate it,
         then use `call_tool` to invoke the relevant tool.
+
+    - type: inline
+      id: variants-as-compositions
+      content: |
+        ## Variants are new Compositions, not cloned projects
+
+        When the user asks for "another version" of an existing Remotion video — a
+        different aspect ratio (Instagram Reels, vertical), different cast,
+        different palette, different language, different copy — **add a new
+        `<Composition>` to the existing project's `Root.tsx`**. Do **not** clone
+        the project directory.
+
+        **Why:** Remotion's composition model is built for this. Multiple
+        compositions in one project share scenes, components, cast, audio,
+        fonts, brand constants, and the build pipeline. Cloning fragments edits
+        across copies, duplicates `node_modules` and rendered assets, and lets
+        the variants drift over time.
+
+        **Trigger phrases:** "give me another version", "a version with X", "an
+        Instagram Reels version", "a portrait/landscape version", "the same but
+        with X", "make a variant", "show me how it would look with X".
+
+        **How to model each variant kind:**
+
+        - **Different aspect ratio** — register a second `<Composition
+          id="MainReel" component={MainVideo} width={1080} height={1920} ... />`
+          alongside the primary one. Scenes use `useVideoConfig()` to detect
+          dimensions and reflow.
+        - **Different content (icons, copy, cast, palette)** — parameterize the
+          master `MainVideo` via `inputProps`. Register a second `<Composition
+          id="MainVideoAlt" defaultProps={{ variant: 'alt' }} ... />`. Scenes
+          read `useInputProps()` and branch.
+        - **Different cast** — declare both casts (`cast.yaml` + `cast-alt.yaml`),
+          generate two `cast.ts` outputs, pick via `inputProps`. Or co-design
+          one cast that both variants share.
+        - **Faster cut / different timing** — register a sibling root component
+          with compressed timings as a separate `<Composition>`. See the
+          `capa-launch` project for an example.
+
+        **Litmus test:** if the only file that needs to differ between the two
+        outputs is the `<Composition>` registration (or its `defaultProps`), it's
+        a variant — same project, new composition. If the two outputs require
+        different scene structures, different timelines, or different audio
+        scripts, they're separate projects.
+
+    - type: inline
+      id: auto-launch-studio
+      content: |
+        ## Auto-launch Remotion Studio on first frame
+
+        **As soon as Scene 1 type-checks and renders a still successfully** (end
+        of Step 6 Phase 1), launch Remotion Studio in the background and open
+        it in the user's browser — without being asked. Hot reload gives the
+        user something to watch while remaining scenes, audio, and assembly are
+        built, instead of waiting for a finished mp4.
+
+        ```bash
+        cd projects/<project>/remotion
+        npx remotion studio --no-open &   # background — capture port from banner
+        open "http://localhost:<port>"     # auto-open
+        ```
+
+        **Only one Studio instance at a time.** Before launching, check for an
+        existing `remotion studio` background task and stop it if it's for a
+        different project. If one is already running for the current project,
+        don't start a second.
+
+        Variants registered via the `variants-as-compositions` pattern appear in
+        the same Studio automatically via hot reload — no second Studio is
+        needed when adding compositions later.
+
+        Mention the URL to the user in plain text after launching so they can
+        open it themselves if `open` fails (e.g. headless environments).
+
 servers: []
 tools: []
+
