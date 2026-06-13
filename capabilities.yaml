@@ -65,57 +65,17 @@ agents:
   base:
     type: local
     path: ./WORKFLOW.md
-  # Project rules live as standalone markdown files under ./rules/ so they
-  # can be edited/diffed/linted without YAML quoting weirdness or collision
-  # with CAPA's ${VarName} credential interpolation.
-  #
-  # CAPA doesn't currently support a portable "local rule" source type:
-  #   - type: local for agents.additional errors with "Unknown agent snippet type: local"
-  #   - type: remote with file:// requires an ABSOLUTE path, which kills portability
-  #     across checkouts
-  #   - the top-level rules: section writes to .claude/rules/*.md, which Claude
-  #     Code's harness does not auto-load
-  #
-  # The workaround is a single short index snippet folded into CLAUDE.md that
-  # names each rule's trigger and file path. The agent reads the indexed file
-  # when the trigger matches — one extra Read in exchange for portability.
-  # Adding a new rule = drop an .md under ./rules/ and append a bullet to the
-  # index below.
-  additional:
-    - type: inline
-      id: capa_tool_usage
-      content: >-
-        After learning a new skill, call the `setup_tools` tool to activate it,
-        then use `call_tool` to invoke the relevant tool.
-
-    - type: inline
-      id: project-rules-index
-      content: |
-        ## Project rules — read the relevant rule file before acting
-
-        Each rule below names the trigger and the file. When the trigger
-        matches the task at hand, Read the file BEFORE writing code so its
-        guidance shapes what you build.
-
-        - **Variants of an existing video** — read `rules/variants-as-compositions.md`
-          whenever the user asks for "another version", "a version with X",
-          "an Instagram Reels version", or any phrasing that means "the same
-          video but different". The rule covers when to add a new
-          `<Composition>` vs when to start a new project, plus how to model
-          each common variant kind (aspect ratio, content, cast, timing).
-
-        - **Live preview during scene building** — read `rules/auto-launch-studio.md`
-          before working on the first scene of any new Remotion project. The
-          rule covers when to launch Remotion Studio, the one-instance
-          guarantee, and the headless fallback.
-
-        - **Brand / tool / platform icons** — read `rules/brand-icons-via-simple-icons.md`
-          whenever a scene needs to show a tool, company, or platform (agent
-          name pills, integration grids, "as seen in" rows, comparison tables,
-          social proof, footer logos). The rule covers verifying slugs,
-          installing per-project, the canonical `<BrandIcon>` component, the
-          tree-shaking trap to avoid, the text-pill fallback, and the legal
-          disclaimer.
+  # All agent guidance — guiding principles, the project-rules index, the
+  # setup_tools/call_tool reminder, the 10-step workflow — lives in the
+  # base file (WORKFLOW.md), and each rule body lives at ./rules/<id>.md.
+  # Nothing is inlined here. agents.additional is intentionally omitted:
+  # CAPA doesn't currently support a portable local source for additional
+  # snippets (type: local errors; type: remote with file:// requires an
+  # absolute path that breaks across checkouts), and any inline content
+  # would collide with CAPA's ${VarName} credential interpolation when
+  # examples contain JS template literals. If you need to add agent
+  # guidance, edit WORKFLOW.md or drop a new rule under ./rules/ and
+  # append a bullet to its "Project Rules" section.
 
 servers: []
 tools: []

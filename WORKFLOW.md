@@ -10,7 +10,7 @@ These are your instructions when creating and iterating on video projects. You a
 - **Iterative and incremental**: Propose scenes, get the user's review, and implement only after approval. Show previews early and often.
 - **Top-down construction**: Establish the overall narrative, structure, and timing before coding individual scenes or compositions.
 - **Remotion-first composition**: Remotion is **always** the primary composition engine — it owns the final video timeline, scene sequencing, transitions, text, branding, and audio. ManimGL is a **supplementary** tool used only when a scene requires mathematical animations, algorithmic visualizations, or LaTeX-heavy diagrams. Those ManimGL clips are rendered to `.mp4` and embedded into the Remotion composition via `<OffthreadVideo>`. Never build a ManimGL-only project unless the user explicitly requests it.
-- **Skill-driven development**: Always load the relevant skill before writing engine-specific code. Read the **remotion** skill (`skills/remotion/SKILL.md`) before writing Remotion code. Read the **manim** skill (`skills/manim/SKILL.md`) before writing ManimGL code. Then load specific rule files as needed for the task at hand (e.g. `rules/transitions.md`, `rules/tex.md`).
+- **Skill-driven development**: Always load the relevant skill before writing engine-specific code. Read the **remotion** skill (`skills/remotion/SKILL.md`) before writing Remotion code. Read the **manim** skill (`skills/manim/SKILL.md`) before writing ManimGL code. Then load specific rule files as needed for the task at hand (e.g. `rules/transitions.md`, `rules/tex.md`). After learning a new skill, call the `setup_tools` tool to activate it, then use `call_tool` to invoke the relevant tool.
 - **Reuse skill scripts — never duplicate**: When a skill provides scripts (e.g. `skills/text-to-speech/scripts/kokoro_tts.py`), **call them directly** via `uv run python skills/...` or import their functions. If project-specific behavior is needed (e.g. batch processing, timeline generation), create a thin wrapper in the project's `scripts/` directory that delegates core work to the skill script. Never copy-paste skill code into project files.
 - **Shared workspace environments**: All projects share a single Python virtual environment at the workspace root (managed by `uv` with the root `pyproject.toml`). Never create per-project `pyproject.toml`, `.venv`, or `uv.lock` files. For Node.js, use npm workspaces so Remotion dependencies are hoisted to the workspace root `node_modules`. See the **Shared Environments** section for details.
 - **Project isolation** (source code): Each video lives in its own directory under `projects/`. Projects are independent — never share source code or state across project boundaries. Environments and dependencies, however, are shared at the workspace level.
@@ -20,6 +20,18 @@ These are your instructions when creating and iterating on video projects. You a
 - **Cast-first character design**: When a video features characters (narrator, presenter, customer, etc.), define them once in a project cast and reuse those identities across scenes. Use the `characters` skill (react-peeps based). Scenes render cast members via a shared `<Character>` wrapper; never re-spec a character's look inline in a scene file.
 - **Preview before polish**: Get rough animations working before fine-tuning timing, colors, and transitions. Working ugly beats broken beautiful.
 - **Preserve user assets**: Never modify or overwrite user-provided assets (videos, images, audio). Copy or reference them in place.
+
+---
+
+## Project Rules
+
+Project-level behavior rules live as standalone markdown files under `./rules/`. Each rule names a **trigger** and a **file**. When the trigger matches the task at hand, **Read the file before writing code** so its guidance shapes what you build. Add new rules by dropping an `.md` under `./rules/` and appending a bullet here.
+
+- **Variants of an existing video** — read `rules/variants-as-compositions.md` whenever the user asks for "another version", "a version with X", "an Instagram Reels version", or any phrasing that means "the same video but different". The rule covers when to add a new `<Composition>` vs. when to start a new project, plus how to model each common variant kind (aspect ratio, content, cast, timing).
+
+- **Live preview during scene building** — read `rules/auto-launch-studio.md` before working on the first scene of any new Remotion project. The rule covers when to launch Remotion Studio, the one-instance guarantee, and the headless fallback.
+
+- **Brand / tool / platform icons** — read `rules/brand-icons-via-simple-icons.md` whenever a scene needs to show a tool, company, or platform (agent name pills, integration grids, "as seen in" rows, comparison tables, social proof, footer logos). The rule covers verifying slugs, installing per-project, the canonical `<BrandIcon>` component, the tree-shaking trap to avoid, the text-pill fallback, and the legal disclaimer.
 
 ---
 
