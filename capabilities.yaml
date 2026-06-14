@@ -65,10 +65,6 @@ agents:
   base:
     type: local
     path: ./WORKFLOW.md
-  # Per-task rules are declared under the top-level `rules:` section below,
-  # each pointing at a standalone markdown file. There are no agents.additional
-  # snippets — agent guidance lives in WORKFLOW.md (the base) and in the
-  # individual rule files.
 
 # Project rules — installed by `capa install` into .claude/rules/<id>.md
 # from the local file at `path`. Each rule has a trigger (described in
